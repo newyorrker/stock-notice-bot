@@ -51,7 +51,6 @@ $ NODE_ENV=production node app
 ### Todos
 
  - Write MORE Tests
- - Add Night Mode
 
 License
 ----
