@@ -1,72 +1,33 @@
-const express     = require("express");
-const objectId    = require("mongodb").ObjectID;
-const TelegramBot = require('node-telegram-bot-api');
-
-require('dotenv/config')
-
-const connectionFunc = require("../../Data/mongoClient.js").connect;
+const express = require("express");
+const MongoClient = require("mongodb").MongoClient;
+const objectId = require("mongodb").ObjectID;
 
 const app = express();
 const jsonParser = express.json();
 
-const config = {
-  db: 'stock-notice',
-  collection: 'notifications',
-  telegramToken: '869548122:AAGPVRh5BN8laZdT2yENutKaxh55C0bsfFo'
-}
+const mongoClient = new MongoClient("mongodb://localhost:27017/", { useNewUrlParser: true });
 
-var proc = process;
+let dbClient;
 
-console.log(process.env, 'envs');
+app.use(express.static(__dirname + "/public"));
 
-
-const TOKEN = config.telegramToken;
-
-const bot = new TelegramBot(TOKEN, { polling: true });
-
-// Matches "/echo [whatever]"
-bot.onText(/\/echo (.+)/, (msg, match) => {
-  // 'msg' is the received Message from Telegram
-  // 'match' is the result of executing the regexp above on the text content
-  // of the message
-
-  const chatId = msg.chat.id;
-  const resp = match[1]; // the captured "whatever"
-
-  // send back the matched "whatever" to the chat
-  bot.sendMessage(chatId, resp);
+mongoClient.connect(function (err, client) {
+  if (err) return console.log(err);
+  dbClient = client;
+  app.locals.collection = client.db("usersdb").collection("users");
+  app.listen(3000, function () {
+    console.log("Сервер ожидает подключения...");
+  });
 });
 
-bot.on('message', (msg) => {
-  const chatId = msg.chat.id;
-
-  // send a message to the chat acknowledging receipt of their message
-  bot.sendMessage(chatId, "мушук-пушук");
-});
-
-
-
-
-
-connectionFunc(app, config);
-
-
-//add
-app.post("/api/notification/add", jsonParser, function (req, res) {
+app.get("/api/users", function (req, res) {
 
   const collection = req.app.locals.collection;
+  collection.find({}).toArray(function (err, users) {
 
-  res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self'");
-
-  res.json(req.headers);
-
-
-
-  // collection.find({}).toArray(function (err, users) {
-
-  //   if (err) return console.log(err);
-  //   res.send(users)
-  // });
+    if (err) return console.log(err);
+    res.send(users)
+  });
 
 });
 
@@ -74,7 +35,6 @@ app.get("/api/users/:id", function (req, res) {
 
   const id = new objectId(req.params.id);
   const collection = req.app.locals.collection;
-
   collection.findOne({ _id: id }, function (err, user) {
 
     if (err) return console.log(err);
@@ -125,4 +85,10 @@ app.put("/api/users", jsonParser, function (req, res) {
       const user = result.value;
       res.send(user);
     });
+});
+
+// прослушиваем прерывание работы программы (ctrl-c)
+process.on("SIGINT", () => {
+  dbClient.close();
+  process.exit();
 });

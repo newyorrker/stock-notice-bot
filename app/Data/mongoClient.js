@@ -1,5 +1,7 @@
-const MongoClient       = require("mongodb").MongoClient;
-const connectionString  = require("../Configuration/config.js").connectionString;
+const MongoClient = require("mongodb").MongoClient;
+const config = require("../Configuration/config.js");
+
+const connectionString = config.connectionString;
 
 const mongoClient = new MongoClient(connectionString, { useNewUrlParser: true });
 
@@ -7,6 +9,8 @@ const connect = (app, config) => {
 
   mongoClient.connect(function (err, client) {
     if (err) return console.log(err);
+
+    //убрать отсюда app и экспортировать необходимую коллекцию
 
     app.locals.collection = client.db(config.db).collection(config.collection);
 
