@@ -12,7 +12,7 @@
         "${workspaceFolder}/node_modules/**/*.js",
         "<node_internals>/**"
       ],
-      "program": "${workspaceFolder}/app/Api/NotificationApi/notificationApi.js"
+      "program": "${workspaceFolder}/app/index.js"
     }
   ]
 }

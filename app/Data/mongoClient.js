@@ -1,31 +1,19 @@
-const MongoClient = require("mongodb").MongoClient;
-const config = require("../Configuration/config.js");
+let collect = async () => {
 
-const connectionString = config.connectionString;
+  let collect = await MongoClient.connect(connectionString);
 
-const mongoClient = new MongoClient(connectionString, { useNewUrlParser: true });
+  console.log('in client')
 
-const connect = (app, config) => {
-
-  mongoClient.connect(function (err, client) {
-    if (err) return console.log(err);
-
-    //убрать отсюда app и экспортировать необходимую коллекцию
-
-    app.locals.collection = client.db(config.db).collection(config.collection);
-
-    app.listen(3000, function () {
-      console.log("Сервер ожидает подключения...");
-    });
-  });
+  return collect.db('stock-notice').collection('notifications');
 
 }
 
-// прослушиваем прерывание работы программы (ctrl-c)
+// // прослушиваем прерывание работы программы (ctrl-c)
 process.on("SIGINT", () => {
   console.log("Завершено")
   mongoClient.close();
   process.exit();
 });
 
-module.exports.connect = connect;
+module.exports.collect = collect
+//module.exports.notificationsCollection = notificationsCollection;
