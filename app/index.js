@@ -1,6 +1,5 @@
 'use strict'
 
-
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
@@ -15,14 +14,19 @@ app.listen(3000)
 const notificationApi = require('./Api/NotificationApi/notificationApi.js')
 
 
-
+//роуты
 app.use('/notifications', notificationApi);
 
 
 
 
 
-
+// // прослушиваем прерывание работы программы (ctrl-c)
+process.on("SIGINT", () => {
+  console.log("Завершено")
+  mongoose.disconnect();
+  process.exit();
+});
 
 
 

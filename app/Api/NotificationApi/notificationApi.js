@@ -48,17 +48,6 @@ const TOKEN = config.telegramToken;
 
 var proc = process;
 
-//add
-// app.post("/api/notification/add", jsonParser, function (req, res) {
-
-//   const collection = req.app.locals.collection;
-
-//   res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self'");
-
-//   res.json(req.headers);
-
-// });
-
 
 
 // Matches "/echo [whatever]"

@@ -32,15 +32,3 @@ const NotificationSchema = mongoose.Schema({
 });
 
 module.exports = mongoose.model('Notifications', NotificationSchema);
-
-
-// let document = {
-//   _id: shortid.generate(),
-//   Text: 'Новый уведомлений',
-//   RawText: '',
-//   Price: 0.01,
-//   DateCreate: '',
-//   DateActuation: '',
-//   Active: false,
-//   UserId: 600
-// }
