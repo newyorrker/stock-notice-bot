@@ -1,69 +1,36 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const shortid = require('shortid');
+
+const NotificationService = require('../../Services/NotificationService/NotificationService');
+
+const _notificationService = new NotificationService();
 
 const jsonParser = express.json();
 
 
-const NotificationModel = require('../../Data/Models/NotificationsModel')
+const NotificationDocumentModel = require('../../Data/Models/NotificationsDocumentModel').model;
 
+router.post('/add', jsonParser, async (req, res) => {
 
-// define the home page route
-router.post('/add', jsonParser, function (req, res) {
-  const notice = new NotificationModel({
-    Text: req.body.Text,
+  const chatMessageObject = _notificationService.ParseChatMessage(req.body.Text);
+
+  const noticeDocument = new NotificationDocumentModel({
+    _id: shortid.generate(),
+    RawText: req.body.Text,
+    Text: chatMessageObject.text,
+    Price: chatMessageObject.price,
+    Symbol: chatMessageObject.symbol,
     UserId: req.body.UserId
   })
 
-  notice.save()
-  .then(data => {
-    res.json(data)
-  })
-  .catch(error => {
-    res.json({message: error})
-  })
-});
-// define the about route
-router.get('/about', function (req, res) {
-  res.send('About birds');
+  try {
+    var notice = await noticeDocument.save();
+    res.json(notice)
+  } catch (error) {
+    res.json({ message: error })
+  }
+
 });
 
-
-
-module.exports = router;
-
-
-
-
-const TelegramBot = require('node-telegram-bot-api');
-
-const config = {
-  db: 'stock-notice',
-  collection: 'notifications',
-  telegramToken: '869548122:AAGPVRh5BN8laZdT2yENutKaxh55C0bsfFo'
-}
-
-const TOKEN = config.telegramToken;
-
-// const bot = new TelegramBot(TOKEN, { polling: true });
-
-var proc = process;
-
-
-
-// Matches "/echo [whatever]"
-// bot.onText(/\/echo (.+)/, (msg, match) => {
-
-
-//   const chatId = msg.chat.id;
-//   const resp = match[1]; // the captured "whatever"
-
-//   // send back the matched "whatever" to the chat
-//   bot.sendMessage(chatId, resp);
-// });
-
-// bot.on('message', (msg) => {
-//   const chatId = msg.chat.id;
-
-//   // send a message to the chat acknowledging receipt of their message
-//   bot.sendMessage(chatId, "мушук-пушук");
-// });
+module.exports.router = router;

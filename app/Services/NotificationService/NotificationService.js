@@ -1,5 +1,34 @@
-//тут хранятся методы которые ходят в базу
+module.exports = function NotificationService() {
 
-//и эти методы вызывают api или bot
+  ///Парсит сообщение чата
+  ///Принимает сообщение
+  ///Возвращает объект с необходимыми данными
+  parseChatMessage = message => {
+    var messageGroup = message.split('-');
 
-//тут лежит логика подбора уведомлений например
+    return {
+      symbol: messageGroup[0],
+      price: messageGroup[1],
+      text: messageGroup[2]
+    }
+  }
+
+  ///Создает успешное сообщение
+  createSuccessMessage = data => {
+    return `Ваше уведомление сработает когда ${data.Symbol} достигнет цены ${data.Price}`;
+  }
+
+  //
+  getNotifications = (mongoose, schema) => {
+
+    const notifications = mongoose.model('Notifications', schema);
+
+    return notifications.find();
+  }
+
+  return {
+    ParseChatMessage: parseChatMessage,
+    CreateSuccessMessage: createSuccessMessage,
+    getNotifications: getNotifications
+  }
+}

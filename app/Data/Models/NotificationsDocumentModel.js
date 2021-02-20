@@ -1,17 +1,16 @@
 const mongoose = require('mongoose');
-const shortid = require('shortid')
 
-const NotificationSchema = mongoose.Schema({
+const NotificationDocumentSchema = mongoose.Schema({
   _id: {
     type: String,
-    require: false,
-    default: shortid.generate()
+    require: true
   },
   Text: String,
   RawText: {
     type: String,
     require: true
   },
+  Symbol: String,
   Price: {
     type: Number,
     require: true
@@ -31,4 +30,5 @@ const NotificationSchema = mongoose.Schema({
   UserId: Number
 });
 
-module.exports = mongoose.model('Notifications', NotificationSchema);
+module.exports.model = mongoose.model('Notifications', NotificationDocumentSchema);
+module.exports.schema = NotificationDocumentSchema;
